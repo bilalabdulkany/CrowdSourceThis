@@ -142,12 +142,8 @@ public class UserPreferenceDemoActivity extends Activity {
 
             public void onClick(View v) {
                 Log.i(TAG, "getWeatherData clicked.");
-<<<<<<< HEAD
-                String serverURL ="http://api.geonames.org/findNearbyPostalCodesJSON?lat=6.0536&lng=80.2117&username=merdocbilal";
+                String serverURL ="http://api.geonames.org/findNearbyPostalCodesJSON?lat="+latitude+"&lng="+longitude+"&username=merdocbilal";
                 new LongOperation().execute(serverURL);
-=======
-
->>>>>>> 88c0106a9b5691320f45050ef67b41237c768dd6
                // new DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
             }
         });
@@ -276,17 +272,12 @@ public class UserPreferenceDemoActivity extends Activity {
                        
                      /***** Returns the value mapped by name if it exists and is a JSONArray. ***/
                      /*******  Returns null otherwise.  *******/
-<<<<<<< HEAD
                      JSONArray jsonMainNode = jsonResponse.optJSONArray("postalCodes");
-=======
-                     JSONArray jsonMainNode = jsonResponse.optJSONArray("Android");
->>>>>>> 88c0106a9b5691320f45050ef67b41237c768dd6
                        
                      /*********** Process each JSON Node ************/
    
                      int lengthJsonArr = jsonMainNode.length();  
    
-<<<<<<< HEAD
                     // for(int i=0; i < lengthJsonArr; i++) 
                      {
                          /****** Get Object for each JSON node.***********/
@@ -303,30 +294,13 @@ public class UserPreferenceDemoActivity extends Activity {
                                      + "Time                : "+ latid +" " 
                                      +"-------------------------------------------------";
                          Log.i("District", name);
-=======
-                     for(int i=0; i < lengthJsonArr; i++) 
-                     {
-                         /****** Get Object for each JSON node.***********/
-                         JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
-                           
-                         /******* Fetch node values **********/
-                         String name       = jsonChildNode.optString("name").toString();
-                         String number     = jsonChildNode.optString("number").toString();
-                         String date_added = jsonChildNode.optString("date_added").toString();
-                           
-                         
-                         OutputData += " Name           : "+ name +"  "
-                                     + "Number      : "+ number +"  "
-                                     + "Time                : "+ date_added +" " 
-                                     +"-------------------------------------------------";
-                         
->>>>>>> 88c0106a9b5691320f45050ef67b41237c768dd6
                           
-                    }
+                         Toast.makeText(getApplicationContext(), "District:"+name, Toast.LENGTH_SHORT).show();
+                     }
                  /****************** End Parse Response JSON Data *************/    
                       
                      //Show Parsed Output on screen (activity)
-                     Toast.makeText(getApplicationContext(), "output:"+OutputData, Toast.LENGTH_SHORT);
+                    
                      //jsonParsed.setText( OutputData );
                       
                        
