@@ -15,7 +15,6 @@
 
 package com.amazonaws.demo.userpreferencesom;
 
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -46,373 +45,413 @@ import android.widget.Toast;
 
 public class UserPreferenceDemoActivity extends Activity {
 
-    private static final String TAG = "UserPreferenceDemoActivity";
-    public static AmazonClientManager clientManager = null;
-    private android.widget.EditText txtStatus=null;
-    private static String statusMessage="Not Set..";
-    GPSTracker gps = null;
-    private double latitude=0f;
-    private double longitude=0f;
+	private static final String TAG = "UserPreferenceDemoActivity";
+	public static AmazonClientManager clientManager = null;
+	private android.widget.EditText txtStatus = null;
+	private static String statusMessage = "Not Set..";
+	GPSTracker gps = null;
+	private double latitude = 0f;
+	private double longitude = 0f;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
 
-        clientManager = new AmazonClientManager(this);
-        
-        txtStatus = (EditText)findViewById(R.id.txtStatus);
-        
-      //  gps=new GPSTracker(UserPreferenceDemoActivity.this);
-        
- final Button btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
-        
-        // show location button click event
-        btnShowLocation.setOnClickListener(new View.OnClickListener() {
-			
+		clientManager = new AmazonClientManager(this);
+
+		txtStatus = (EditText) findViewById(R.id.txtStatus);
+
+		// gps=new GPSTracker(UserPreferenceDemoActivity.this);
+
+		final Button btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
+
+		// show location button click event
+		btnShowLocation.setOnClickListener(new View.OnClickListener() {
+
 			@Override
-			public void onClick(View arg0) {		
+			public void onClick(View arg0) {
 				// create class object
-		        gps = new GPSTracker(UserPreferenceDemoActivity.this);
+				gps = new GPSTracker(UserPreferenceDemoActivity.this);
 
-				// check if GPS enabled		
-		        if(gps.canGetLocation()){
-		        	
-		        	 latitude = gps.getLatitude();
-		        	 longitude = gps.getLongitude();
-		        	
-		        	// \n is for new line
-		        	Toast.makeText(getApplicationContext(), "Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();	
-		        }else{
-		        	// can't get location
-		        	// GPS or Network is not enabled
-		        	// Ask user to enable GPS/network in settings
-		        	gps.showSettingsAlert();
-		        }
-				
+				// check if GPS enabled
+				if (gps.canGetLocation()) {
+
+					latitude = gps.getLatitude();
+					longitude = gps.getLongitude();
+
+					// \n is for new line
+					Toast.makeText(getApplicationContext(),
+							"Your Location is - \nLat: " + latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+				} else {
+					// can't get location
+					// GPS or Network is not enabled
+					// Ask user to enable GPS/network in settings
+					gps.showSettingsAlert();
+				}
+
 			}
 		});
-        
-        final Button createTableBttn = (Button) findViewById(R.id.create_table_bttn);
-        createTableBttn.setOnClickListener(new View.OnClickListener() {
 
-            public void onClick(View v) {
-                Log.i(TAG, "createTableBttn clicked.");
+		final Button createTableBttn = (Button) findViewById(R.id.create_table_bttn);
+		createTableBttn.setOnClickListener(new View.OnClickListener() {
 
-                new DynamoDBManagerTask()
-                        .execute(DynamoDBManagerType.CREATE_TABLE);
-            }
-        });
+			public void onClick(View v) {
+				Log.i(TAG, "createTableBttn clicked.");
 
-        final Button insertUsersBttn = (Button) findViewById(R.id.insert_users_bttn);
-        insertUsersBttn.setOnClickListener(new View.OnClickListener() {
+				new DynamoDBManagerTask().execute(DynamoDBManagerType.CREATE_TABLE);
+			}
+		});
 
-            public void onClick(View v) {
-                Log.i(TAG, "insertUsersBttn clicked.");
+		final Button insertUsersBttn = (Button) findViewById(R.id.insert_users_bttn);
+		insertUsersBttn.setOnClickListener(new View.OnClickListener() {
 
-                new DynamoDBManagerTask()
-                        .execute(DynamoDBManagerType.INSERT_USER);
-            }
-        });
+			public void onClick(View v) {
+				Log.i(TAG, "insertUsersBttn clicked.");
 
-        final Button listUsersBttn = (Button) findViewById(R.id.list_users_bttn);
-        listUsersBttn.setOnClickListener(new View.OnClickListener() {
+				new DynamoDBManagerTask().execute(DynamoDBManagerType.INSERT_USER);
+			}
+		});
 
-            public void onClick(View v) {
-                Log.i(TAG, "listUsersBttn clicked.");
+		final Button listUsersBttn = (Button) findViewById(R.id.list_users_bttn);
+		listUsersBttn.setOnClickListener(new View.OnClickListener() {
 
-                new DynamoDBManagerTask()
-                        .execute(DynamoDBManagerType.LIST_USERS);
-            }
-        });
+			public void onClick(View v) {
+				Log.i(TAG, "listUsersBttn clicked.");
 
-        final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
-        deleteTableBttn.setOnClickListener(new View.OnClickListener() {
+				new DynamoDBManagerTask().execute(DynamoDBManagerType.LIST_USERS);
+			}
+		});
 
-            public void onClick(View v) {
-                Log.i(TAG, "deleteTableBttn clicked.");
+		final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
+		deleteTableBttn.setOnClickListener(new View.OnClickListener() {
 
-                new DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
-            }
-        });
-        
-        final Button getWeatherData = (Button) findViewById(R.id.GetWeatherData);
-        getWeatherData.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Log.i(TAG, "deleteTableBttn clicked.");
 
-            public void onClick(View v) {
-                Log.i(TAG, "getWeatherData clicked.");
-                String serverURL ="http://api.geonames.org/findNearbyPostalCodesJSON?lat="+latitude+"&lng="+longitude+"&username=merdocbilal";
-                new LongOperation().execute(serverURL);
-               // new DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
-            }
-        });
-    }
-    
-    
- // Class with extends AsyncTask class
-    
-    private class LongOperation  extends AsyncTask<String, Void, Void> {
-          
-        // Required initialization
-         
-        private final HttpClient Client = new DefaultHttpClient();
-        private String Content;
-        private String Error = null;
-        private ProgressDialog Dialog = new ProgressDialog(UserPreferenceDemoActivity.this);
-        String data =""; 
-         String uiUpdate,jsonParsed,serverText;
-        
-        //TextView uiUpdate = (TextView) findViewById(R.id.output);
-        //TextView jsonParsed = (TextView) findViewById(R.id.jsonParsed);
-        int sizeData = 0;  
-        //EditText serverText = (EditText) findViewById(R.id.serverText);
-         
-         
-        protected void onPreExecute() {
-            // NOTE: You can call UI Element here.
-              
-            //Start Progress Dialog (Message)
-            
-            Dialog.setMessage("Please wait..");
-            Dialog.show();
-             
-           /* try{
-                // Set Request parameter
-                data +="&" + URLEncoder.encode("data", "UTF-8") + "="+serverText.getText();
-                     
-            } catch (UnsupportedEncodingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            */ 
-             
-        }
-  
-        // Call after onPreExecute method
-        protected Void doInBackground(String... urls) {
-             
-            /************ Make Post Call To Web Server ***********/
-            BufferedReader reader=null;
-    
-                 // Send data 
-                try
-                { 
-                   
-                   // Defined URL  where to send data
-                   URL url = new URL(urls[0]);
-                      
-                  // Send POST data request
-        
-                  URLConnection conn = url.openConnection(); 
-                  conn.setDoOutput(true); 
-                  OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream()); 
-                  wr.write( data ); 
-                  wr.flush(); 
-               
-                  // Get the server response 
-                    
-                  reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                  StringBuilder sb = new StringBuilder();
-                  String line = null;
-                 
-                    // Read Server Response
-                    while((line = reader.readLine()) != null)
-                        {
-                               // Append server response in string
-                               sb.append(line + "");
-                        }
-                     
-                    // Append Server Response To Content String 
-                   Content = sb.toString();
-                }
-                catch(Exception ex)
-                {
-                    Error = ex.getMessage();
-                }
-                finally
-                {
-                    try
-                    {
-          
-                        reader.close();
-                    }
-        
-                    catch(Exception ex) {}
-                }
-             
-            /*****************************************************/
-            return null;
-        }
-          
-        protected void onPostExecute(Void unused) {
-            // NOTE: You can call UI Element here.
-              
-            // Close progress dialog
-            Dialog.dismiss();
-              
-            if (Error != null) {
-                  
-               Toast.makeText(getApplicationContext(), "output:"+Error, Toast.LENGTH_SHORT);// uiUpdate.setText("Output : "+Error);
-                  
-            } else {
-               
-                // Show Response Json On Screen (activity)
-            	Toast.makeText(getApplicationContext(), "output:"+Error, Toast.LENGTH_LONG);
-                 
-             /****************** Start Parse Response JSON Data *************/
-                 
-                String OutputData = "";
-                JSONObject jsonResponse;
-                       
-                try {
-                       
-                     /****** Creates a new JSONObject with name/value mappings from the JSON string. ********/
-                     jsonResponse = new JSONObject(Content);
-                       
-                     /***** Returns the value mapped by name if it exists and is a JSONArray. ***/
-                     /*******  Returns null otherwise.  *******/
-                     JSONArray jsonMainNode = jsonResponse.optJSONArray("postalCodes");
-                       
-                     /*********** Process each JSON Node ************/
-   
-                     int lengthJsonArr = jsonMainNode.length();  
-   
-                    // for(int i=0; i < lengthJsonArr; i++) 
-                     {
-                         /****** Get Object for each JSON node.***********/
-                         JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
-                           
-                         /******* Fetch node values **********/
-                         String name       = jsonChildNode.optString("adminName2").toString();
-                         String longit     = jsonChildNode.optString("lng").toString();
-                         String latid = jsonChildNode.optString("lat").toString();
-                           
-                         
-                         OutputData += " Name           : "+ name +"  "
-                                     + "longitude      : "+ longit +"  "
-                                     + "Time                : "+ latid +" " 
-                                     +"-------------------------------------------------";
-                         Log.i("District", name);
-                          
-                         Toast.makeText(getApplicationContext(), "District:"+name, Toast.LENGTH_SHORT).show();
-                     }
-                 /****************** End Parse Response JSON Data *************/    
-                      
-                     //Show Parsed Output on screen (activity)
-                    
-                     //jsonParsed.setText( OutputData );
-                      
-                       
-                 } catch (JSONException e) {
-           
-                     e.printStackTrace();
-                 }
-   
-                  
-             }
-        }
-          
-    }
+				new DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
+			}
+		});
 
-    private class DynamoDBManagerTask extends
-            AsyncTask<DynamoDBManagerType, Void, DynamoDBManagerTaskResult> {
+		final Button getWeatherData = (Button) findViewById(R.id.GetWeatherData);
+		getWeatherData.setOnClickListener(new View.OnClickListener() {
 
-        protected DynamoDBManagerTaskResult doInBackground(
-                DynamoDBManagerType... types) {
+			public void onClick(View v) {
 
-            String tableStatus = DynamoDBManager.getTestTableStatus();
-            statusMessage=txtStatus.getText().toString();
-            Log.e("Status", statusMessage+"");
+				Log.i(TAG, "getWeatherData clicked.");
+				String serverURL = "http://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon="
+						+ longitude + "&appid=f428c77a063e968735f60f9c82878238";
+				String type = "weather";
+				new LongOperation().execute(serverURL, type);
+				// new
+				// DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
+			}
+		});
 
-            DynamoDBManagerTaskResult result = new DynamoDBManagerTaskResult();
-            result.setTableStatus(tableStatus);
-            result.setTaskType(types[0]);
+		final Button getDistrict = (Button) findViewById(R.id.GetDistrict);
+		getDistrict.setOnClickListener(new View.OnClickListener() {
 
-            if (types[0] == DynamoDBManagerType.CREATE_TABLE) {
-                if (tableStatus.length() == 0) {
-                    DynamoDBManager.createTable();
-                }
-            } else if (types[0] == DynamoDBManagerType.INSERT_USER) {
-            	//Double.toString(gps.getLatitude());
-            	//Double.toString(gps.getLongitude());
-            	Log.e("Latitude", latitude +"");
-            	Log.e("Longitude", longitude+"");
-            	
-            	//txtStatus.setText((txtStatus.getText().equals(""))?"Null":txtStatus.getText().toString());
-                if (tableStatus.equalsIgnoreCase("ACTIVE")) {
-                	Log.e("Inserting", "Inserting users...");
-                	Log.e("Inserting", "Status message..."+statusMessage);
-                    DynamoDBManager.insertUsers(statusMessage,latitude,longitude);
-                }
-            } else if (types[0] == DynamoDBManagerType.LIST_USERS) {
-                if (tableStatus.equalsIgnoreCase("ACTIVE")) {
-                    DynamoDBManager.getUserList();
-                }
-            } else if (types[0] == DynamoDBManagerType.CLEAN_UP) {
-                if (tableStatus.equalsIgnoreCase("ACTIVE")) {
-                    DynamoDBManager.cleanUp();
-                }
-            }
+			public void onClick(View v) {
+				Log.i(TAG, "District clicked.");
+				String serverURL = "http://api.geonames.org/findNearbyPostalCodesJSON?lat=" + latitude + "&lng="
+						+ longitude + "&username=merdocbilal";
+				String type = "district";
+				new LongOperation().execute(serverURL, type);
+				// new
+				// DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
+			}
+		});
 
-            return result;
-        }
+	}
 
-        protected void onPostExecute(DynamoDBManagerTaskResult result) {
+	// Class with extends AsyncTask class
 
-            if (result.getTaskType() == DynamoDBManagerType.CREATE_TABLE) {
+	// Get Weather Class
 
-                if (result.getTableStatus().length() != 0) {
-                    Toast.makeText(
-                            UserPreferenceDemoActivity.this,
-                            "The test table already exists.\nTable Status: "
-                                    + result.getTableStatus(),
-                            Toast.LENGTH_LONG).show();
-                }
+	private class LongOperation extends AsyncTask<String, Void, Void> {
 
-            } else if (result.getTaskType() == DynamoDBManagerType.LIST_USERS
-                    && result.getTableStatus().equalsIgnoreCase("ACTIVE")) {
+		// Required initialization
 
-                startActivity(new Intent(UserPreferenceDemoActivity.this,
-                        UserListActivity.class));
+		private final HttpClient Client = new DefaultHttpClient();
+		private String Content;
+		private String Error = null;
+		private ProgressDialog Dialog = new ProgressDialog(UserPreferenceDemoActivity.this);
+		String data = "";
+		String type = "";
+		String uiUpdate, jsonParsed, serverText;
 
-            } else if (!result.getTableStatus().equalsIgnoreCase("ACTIVE")) {
+		// TextView uiUpdate = (TextView) findViewById(R.id.output);
+		// TextView jsonParsed = (TextView) findViewById(R.id.jsonParsed);
+		int sizeData = 0;
+		// EditText serverText = (EditText) findViewById(R.id.serverText);
 
-                Toast.makeText(
-                        UserPreferenceDemoActivity.this,
-                        "The test table is not ready yet.\nTable Status: "
-                                + result.getTableStatus(), Toast.LENGTH_LONG)
-                        .show();
-            } else if (result.getTableStatus().equalsIgnoreCase("ACTIVE")
-                    && result.getTaskType() == DynamoDBManagerType.INSERT_USER) {
-                Toast.makeText(UserPreferenceDemoActivity.this,
-                        "Users inserted successfully!", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+		protected void onPreExecute() {
+			// NOTE: You can call UI Element here.
 
-    private enum DynamoDBManagerType {
-        GET_TABLE_STATUS, CREATE_TABLE, INSERT_USER, LIST_USERS, CLEAN_UP
-    }
+			// Start Progress Dialog (Message)
 
-    private class DynamoDBManagerTaskResult {
-        private DynamoDBManagerType taskType;
-        private String tableStatus;
+			Dialog.setMessage("Please wait..");
+			Dialog.show();
 
-        public DynamoDBManagerType getTaskType() {
-            return taskType;
-        }
+			/*
+			 * try{ // Set Request parameter data +="&" +
+			 * URLEncoder.encode("data", "UTF-8") + "="+serverText.getText();
+			 * 
+			 * } catch (UnsupportedEncodingException e) { // TODO Auto-generated
+			 * catch block e.printStackTrace(); }
+			 */
 
-        public void setTaskType(DynamoDBManagerType taskType) {
-            this.taskType = taskType;
-        }
+		}
 
-        public String getTableStatus() {
-            return tableStatus;
-        }
+		// Call after onPreExecute method
+		protected Void doInBackground(String... urls) {
 
-        public void setTableStatus(String tableStatus) {
-            this.tableStatus = tableStatus;
-        }
-    }
+			/************ Make Post Call To Web Server ***********/
+			BufferedReader reader = null;
+
+			// Send data
+			try {
+
+				// Defined URL where to send data
+				URL url = new URL(urls[0]);
+				type = urls[1];
+
+				// Send POST data request
+
+				URLConnection conn = url.openConnection();
+				conn.setDoOutput(true);
+				OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+				wr.write(data);
+				wr.flush();
+
+				// Get the server response
+
+				reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+
+				// Read Server Response
+				while ((line = reader.readLine()) != null) {
+					// Append server response in string
+					sb.append(line + "");
+				}
+
+				// Append Server Response To Content String
+				Content = sb.toString();
+			} catch (Exception ex) {
+				Error = ex.getMessage();
+			} finally {
+				try {
+
+					reader.close();
+				}
+
+				catch (Exception ex) {
+				}
+			}
+
+			/*****************************************************/
+			return null;
+		}
+
+		protected void onPostExecute(Void unused) {
+			// NOTE: You can call UI Element here.
+
+			// Close progress dialog
+			Dialog.dismiss();
+
+			if (Error != null) {
+
+				Toast.makeText(getApplicationContext(), "output:" + Error, Toast.LENGTH_SHORT);// uiUpdate.setText("Output
+																								// :
+																								// "+Error);
+
+			} else {
+
+				// Show Response Json On Screen (activity)
+				Toast.makeText(getApplicationContext(), "output:" + Error, Toast.LENGTH_LONG);
+
+				/******************
+				 * Start Parse Response JSON Data
+				 *************/
+
+				String OutputData = "";
+				JSONObject jsonResponse;
+
+				try {
+
+					/******
+					 * Creates a new JSONObject with name/value mappings from
+					 * the JSON string.
+					 ********/
+					jsonResponse = new JSONObject(Content);
+
+					/*****
+					 * Returns the value mapped by name if it exists and is a
+					 * JSONArray.
+					 ***/
+					/******* Returns null otherwise. *******/
+					if (type.equalsIgnoreCase("weather")) {
+
+						JSONArray jsonMainNode = jsonResponse.optJSONArray("weather");
+
+						/*********** Process each JSON Node ************/
+
+						int lengthJsonArr = jsonMainNode.length();
+
+						// for(int i=0; i < lengthJsonArr; i++)
+						{
+							/****** Get Object for each JSON node. ***********/
+							JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
+
+							/******* Fetch node values **********/
+							String main = jsonChildNode.optString("main").toString();
+							String longit = jsonChildNode.optString("description").toString();
+							String latid = jsonChildNode.optString("icon").toString();
+
+							OutputData += " Name           : " + main + "  " + "longitude      : " + longit + "  "
+									+ "Time                : " + latid + " "
+									+ "-------------------------------------------------";
+							Log.i("Main", main);
+
+							Toast.makeText(getApplicationContext(), "Main:" + main, Toast.LENGTH_SHORT).show();
+						}
+					} else if (type.equalsIgnoreCase("district")) {
+
+						JSONArray jsonMainNode = jsonResponse.optJSONArray("postalCodes");
+
+						/*********** Process each JSON Node ************/
+
+						int lengthJsonArr = jsonMainNode.length();
+
+						// for(int i=0; i < lengthJsonArr; i++)
+						{
+							/****** Get Object for each JSON node. ***********/
+							JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
+
+							/******* Fetch node values **********/
+							String name = jsonChildNode.optString("adminName2").toString();
+							String longit = jsonChildNode.optString("lng").toString();
+							String latid = jsonChildNode.optString("lat").toString();
+
+							OutputData += " Name           : " + name + "  " + "longitude      : " + longit + "  "
+									+ "Time                : " + latid + " "
+									+ "-------------------------------------------------";
+							Log.i("District", name);
+
+							Toast.makeText(getApplicationContext(), "District:" + name, Toast.LENGTH_SHORT).show();
+						}
+					}
+					/******************
+					 * End Parse Response JSON Data
+					 *************/
+
+					// Show Parsed Output on screen (activity)
+
+					// jsonParsed.setText( OutputData );
+
+				} catch (JSONException e) {
+
+					e.printStackTrace();
+				}
+
+			}
+		}
+
+	}
+
+	private class DynamoDBManagerTask extends AsyncTask<DynamoDBManagerType, Void, DynamoDBManagerTaskResult> {
+
+		protected DynamoDBManagerTaskResult doInBackground(DynamoDBManagerType... types) {
+
+			String tableStatus = DynamoDBManager.getTestTableStatus();
+			statusMessage = txtStatus.getText().toString();
+			Log.e("Status", statusMessage + "");
+
+			DynamoDBManagerTaskResult result = new DynamoDBManagerTaskResult();
+			result.setTableStatus(tableStatus);
+			result.setTaskType(types[0]);
+
+			if (types[0] == DynamoDBManagerType.CREATE_TABLE) {
+				if (tableStatus.length() == 0) {
+					DynamoDBManager.createTable();
+				}
+			} else if (types[0] == DynamoDBManagerType.INSERT_USER) {
+				// Double.toString(gps.getLatitude());
+				// Double.toString(gps.getLongitude());
+				Log.e("Latitude", latitude + "");
+				Log.e("Longitude", longitude + "");
+
+				// txtStatus.setText((txtStatus.getText().equals(""))?"Null":txtStatus.getText().toString());
+				if (tableStatus.equalsIgnoreCase("ACTIVE")) {
+					Log.e("Inserting", "Inserting users...");
+					Log.e("Inserting", "Status message..." + statusMessage);
+					DynamoDBManager.insertUsers(statusMessage, latitude, longitude);
+				}
+			} else if (types[0] == DynamoDBManagerType.LIST_USERS) {
+				if (tableStatus.equalsIgnoreCase("ACTIVE")) {
+					DynamoDBManager.getUserList();
+				}
+			} else if (types[0] == DynamoDBManagerType.CLEAN_UP) {
+				if (tableStatus.equalsIgnoreCase("ACTIVE")) {
+					DynamoDBManager.cleanUp();
+				}
+			}
+
+			return result;
+		}
+
+		protected void onPostExecute(DynamoDBManagerTaskResult result) {
+
+			if (result.getTaskType() == DynamoDBManagerType.CREATE_TABLE) {
+
+				if (result.getTableStatus().length() != 0) {
+					Toast.makeText(UserPreferenceDemoActivity.this,
+							"The test table already exists.\nTable Status: " + result.getTableStatus(),
+							Toast.LENGTH_LONG).show();
+				}
+
+			} else if (result.getTaskType() == DynamoDBManagerType.LIST_USERS
+					&& result.getTableStatus().equalsIgnoreCase("ACTIVE")) {
+
+				startActivity(new Intent(UserPreferenceDemoActivity.this, UserListActivity.class));
+
+			} else if (!result.getTableStatus().equalsIgnoreCase("ACTIVE")) {
+
+				Toast.makeText(UserPreferenceDemoActivity.this,
+						"The test table is not ready yet.\nTable Status: " + result.getTableStatus(), Toast.LENGTH_LONG)
+						.show();
+			} else if (result.getTableStatus().equalsIgnoreCase("ACTIVE")
+					&& result.getTaskType() == DynamoDBManagerType.INSERT_USER) {
+				Toast.makeText(UserPreferenceDemoActivity.this, "Users inserted successfully!", Toast.LENGTH_SHORT)
+						.show();
+			}
+		}
+	}
+
+	private enum DynamoDBManagerType {
+		GET_TABLE_STATUS, CREATE_TABLE, INSERT_USER, LIST_USERS, CLEAN_UP
+	}
+
+	private class DynamoDBManagerTaskResult {
+		private DynamoDBManagerType taskType;
+		private String tableStatus;
+
+		public DynamoDBManagerType getTaskType() {
+			return taskType;
+		}
+
+		public void setTaskType(DynamoDBManagerType taskType) {
+			this.taskType = taskType;
+		}
+
+		public String getTableStatus() {
+			return tableStatus;
+		}
+
+		public void setTableStatus(String tableStatus) {
+			this.tableStatus = tableStatus;
+		}
+	}
 }
