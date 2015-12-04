@@ -19,5 +19,6 @@
     </string-array>
     <string name="status_hint">Update Status</string>
     <string name="status_view">Status_View</string>
+    <string name="weather">Weather</string>
     
 </resources>
