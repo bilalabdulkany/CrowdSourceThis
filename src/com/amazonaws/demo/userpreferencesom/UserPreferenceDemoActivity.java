@@ -142,7 +142,8 @@ public class UserPreferenceDemoActivity extends Activity {
 
             public void onClick(View v) {
                 Log.i(TAG, "getWeatherData clicked.");
-
+                String serverURL ="http://api.geonames.org/findNearbyPostalCodesJSON?lat=6.0536&lng=80.2117&username=merdocbilal";
+                new LongOperation().execute(serverURL);
                // new DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
             }
         });
@@ -271,28 +272,28 @@ public class UserPreferenceDemoActivity extends Activity {
                        
                      /***** Returns the value mapped by name if it exists and is a JSONArray. ***/
                      /*******  Returns null otherwise.  *******/
-                     JSONArray jsonMainNode = jsonResponse.optJSONArray("Android");
+                     JSONArray jsonMainNode = jsonResponse.optJSONArray("postalCodes");
                        
                      /*********** Process each JSON Node ************/
    
                      int lengthJsonArr = jsonMainNode.length();  
    
-                     for(int i=0; i < lengthJsonArr; i++) 
+                    // for(int i=0; i < lengthJsonArr; i++) 
                      {
                          /****** Get Object for each JSON node.***********/
-                         JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
+                         JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
                            
                          /******* Fetch node values **********/
-                         String name       = jsonChildNode.optString("name").toString();
-                         String number     = jsonChildNode.optString("number").toString();
-                         String date_added = jsonChildNode.optString("date_added").toString();
+                         String name       = jsonChildNode.optString("adminName2").toString();
+                         String longit     = jsonChildNode.optString("lng").toString();
+                         String latid = jsonChildNode.optString("lat").toString();
                            
                          
                          OutputData += " Name           : "+ name +"  "
-                                     + "Number      : "+ number +"  "
-                                     + "Time                : "+ date_added +" " 
+                                     + "longitude      : "+ longit +"  "
+                                     + "Time                : "+ latid +" " 
                                      +"-------------------------------------------------";
-                         
+                         Log.i("District", name);
                           
                     }
                  /****************** End Parse Response JSON Data *************/    
