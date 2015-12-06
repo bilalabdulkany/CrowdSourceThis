@@ -16,9 +16,12 @@
 package com.amazonaws.demo.userpreferencesom;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -34,12 +37,15 @@ import com.scjp.tracker.GPSTracker;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +58,9 @@ public class UserPreferenceDemoActivity extends Activity {
 	GPSTracker gps = null;
 	private double latitude = 0f;
 	private double longitude = 0f;
+	private String iconCode ="01d";
+	 ImageView img;
+	    Bitmap bitmap;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +71,7 @@ public class UserPreferenceDemoActivity extends Activity {
 		clientManager = new AmazonClientManager(this);
 
 		txtStatus = (EditText) findViewById(R.id.txtStatus);
+		img = (ImageView)findViewById(R.id.img);
 
 		// gps=new GPSTracker(UserPreferenceDemoActivity.this);
 
@@ -142,8 +152,9 @@ public class UserPreferenceDemoActivity extends Activity {
 				Log.i(TAG, "getWeatherData clicked.");
 				String serverURL = "http://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon="
 						+ longitude + "&appid=f428c77a063e968735f60f9c82878238";
+				String iconUrl="http://openweathermap.org/img/w/"+iconCode+".png";
 				String type = "weather";
-				new LongOperation().execute(serverURL, type);
+				new LongOperation().execute(serverURL, type,iconUrl);
 				// new
 				// DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
 			}
@@ -156,12 +167,14 @@ public class UserPreferenceDemoActivity extends Activity {
 				Log.i(TAG, "District clicked.");
 				String serverURL = "http://api.geonames.org/findNearbyPostalCodesJSON?lat=" + latitude + "&lng="
 						+ longitude + "&username=merdocbilal";
+				String iconUrl="http://openweathermap.org/img/w/"+iconCode+".png";
 				String type = "district";
-				new LongOperation().execute(serverURL, type);
+				new LongOperation().execute(serverURL, type,iconUrl);
 				// new
 				// DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
 			}
 		});
+		
 
 	}
 
@@ -169,7 +182,7 @@ public class UserPreferenceDemoActivity extends Activity {
 
 	// Get Weather Class
 
-	private class LongOperation extends AsyncTask<String, Void, Void> {
+	private class LongOperation extends AsyncTask<String, Void, Bitmap> {
 
 		// Required initialization
 
@@ -180,6 +193,7 @@ public class UserPreferenceDemoActivity extends Activity {
 		String data = "";
 		String type = "";
 		String uiUpdate, jsonParsed, serverText;
+		
 
 		// TextView uiUpdate = (TextView) findViewById(R.id.output);
 		// TextView jsonParsed = (TextView) findViewById(R.id.jsonParsed);
@@ -205,7 +219,7 @@ public class UserPreferenceDemoActivity extends Activity {
 		}
 
 		// Call after onPreExecute method
-		protected Void doInBackground(String... urls) {
+		protected Bitmap doInBackground(String... urls) {
 
 			/************ Make Post Call To Web Server ***********/
 			BufferedReader reader = null;
@@ -239,27 +253,35 @@ public class UserPreferenceDemoActivity extends Activity {
 
 				// Append Server Response To Content String
 				Content = sb.toString();
+				bitmap = BitmapFactory.decodeStream((InputStream)new URL(urls[2]).getContent());
+				
 			} catch (Exception ex) {
 				Error = ex.getMessage();
 			} finally {
 				try {
 
 					reader.close();
+					
 				}
 
 				catch (Exception ex) {
 				}
+				return bitmap;
 			}
+			
+			
+			
 
 			/*****************************************************/
-			return null;
+			
 		}
 
-		protected void onPostExecute(Void unused) {
+		protected void onPostExecute(Bitmap bitmap) {
 			// NOTE: You can call UI Element here.
 
 			// Close progress dialog
 			Dialog.dismiss();
+			
 
 			if (Error != null) {
 
@@ -308,14 +330,19 @@ public class UserPreferenceDemoActivity extends Activity {
 							/******* Fetch node values **********/
 							String main = jsonChildNode.optString("main").toString();
 							String longit = jsonChildNode.optString("description").toString();
-							String latid = jsonChildNode.optString("icon").toString();
+							String icon = jsonChildNode.optString("icon").toString();
 
 							OutputData += " Name           : " + main + "  " + "longitude      : " + longit + "  "
-									+ "Time                : " + latid + " "
+									+ "Time                : " + icon + " "
 									+ "-------------------------------------------------";
 							Log.i("Main", main);
+							iconCode = icon;
+							
+							
 
 							Toast.makeText(getApplicationContext(), "Main:" + main, Toast.LENGTH_SHORT).show();
+							
+							 
 						}
 					} else if (type.equalsIgnoreCase("district")) {
 
@@ -343,6 +370,17 @@ public class UserPreferenceDemoActivity extends Activity {
 							Toast.makeText(getApplicationContext(), "District:" + name, Toast.LENGTH_SHORT).show();
 						}
 					}
+					
+					if(bitmap != null){
+			             img.setImageBitmap(bitmap);
+			             //Dialog.dismiss();
+			 
+			             }else{
+			 
+			             Dialog.dismiss();
+			             Toast.makeText(UserPreferenceDemoActivity.this, "Image Does Not exist or Network Error", Toast.LENGTH_SHORT).show();
+			 
+			             }
 					/******************
 					 * End Parse Response JSON Data
 					 *************/
@@ -357,6 +395,8 @@ public class UserPreferenceDemoActivity extends Activity {
 				}
 
 			}
+			
+			
 		}
 
 	}
