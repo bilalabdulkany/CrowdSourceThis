@@ -93,7 +93,8 @@ public class DynamoDBManager {
                     .wipeCredentialsOnAuthError(ex);
         }*/
     	
-    	createTable(Constants.TEST_TABLE_NAME, 10l, 5l, "userName", "S", "updateDate", "S");
+    	createTable(Constants.UserTableName, 10l, 10l, "userName", "S", "updateDate", "S");
+    	createTable(Constants.DataTableName, 10l, 10l, "district", "S", "updateDate", "S");
     }
 
     
@@ -190,7 +191,7 @@ public class DynamoDBManager {
                     .ddb();
 
             DescribeTableRequest request = new DescribeTableRequest()
-                    .withTableName(Constants.TEST_TABLE_NAME);
+                    .withTableName(Constants.UserTableName);
             DescribeTableResult result = ddb.describeTable(request);
 
             String status = result.getTable().getTableStatus();
@@ -369,7 +370,7 @@ public class DynamoDBManager {
                 .ddb();
 
         DeleteTableRequest request = new DeleteTableRequest()
-                .withTableName(Constants.TEST_TABLE_NAME);
+                .withTableName(Constants.UserTableName);
         try {
             ddb.deleteTable(request);
 
@@ -379,31 +380,14 @@ public class DynamoDBManager {
         }
     }
 
-    @DynamoDBTable(tableName = Constants.TEST_TABLE_NAME)
+    @DynamoDBTable(tableName = Constants.UserTableName)
     public static class UserPreference {
-       // private String userNo;
         private String userName;
         private String statusMessage;
-     
         private String latitude;
         private String longitude;
-        
         private String updateDate;
         
-        
-        
-        
-        
-		
-        /*public String getUserNo() {
-            return userNo;
-        }
-
-        public void setUserNo(String userNo) {
-            this.userNo = userNo;
-        }
-
-*/        
         @DynamoDBRangeKey(attributeName = "updateDate")
         public String getUpdateDate() {
 			return updateDate;
@@ -430,7 +414,8 @@ public class DynamoDBManager {
 		public void setStatusMessage(String statusMessage) {
 			this.statusMessage = statusMessage;
 		}
-		 @DynamoDBAttribute(attributeName = "longitude")
+		
+		@DynamoDBAttribute(attributeName = "longitude")
 		public String getLongitude() {
 			return longitude;
 		}
@@ -439,7 +424,6 @@ public class DynamoDBManager {
 			this.longitude = longitude;
 		}
 
-		
 		@DynamoDBHashKey(attributeName = "userName")
         public String getUserName() {
             return userName;
@@ -449,19 +433,5 @@ public class DynamoDBManager {
             this.userName = userName;
         }
 
-        /*@DynamoDBAttribute(attributeName = "lastName")
-        public String getLastName() {
-            return lastName;
-        }
-
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
-        }
-*/
-  
-
-       
-
-       
     }
 }

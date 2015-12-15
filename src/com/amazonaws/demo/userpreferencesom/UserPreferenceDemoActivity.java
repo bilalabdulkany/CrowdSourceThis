@@ -16,15 +16,11 @@
 package com.amazonaws.demo.userpreferencesom;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -46,12 +42,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class UserPreferenceDemoActivity extends Activity {
 
-	private static final String TAG = "UserPreferenceDemoActivity";
+	private static final String TAG = "CrowdSourceThis";
 	public static AmazonClientManager clientManager = null;
 	private android.widget.EditText txtStatus = null;
 	private static String statusMessage = "Not Set..";

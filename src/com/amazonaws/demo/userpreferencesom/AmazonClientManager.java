@@ -47,7 +47,7 @@ public class AmazonClientManager {
     public boolean hasCredentials() {
         return (!(Constants.ACCOUNT_ID.equalsIgnoreCase("CHANGE_ME")
                 || Constants.IDENTITY_POOL_ID.equalsIgnoreCase("CHANGE_ME")
-                || Constants.TEST_TABLE_NAME.equalsIgnoreCase("CHANGE_ME") || Constants.UNAUTH_ROLE_ARN
+                || Constants.UserTableName.equalsIgnoreCase("CHANGE_ME") || Constants.UNAUTH_ROLE_ARN
                     .equalsIgnoreCase("CHANGE_ME")));
     }
 
