@@ -24,7 +24,7 @@ public class Constants {
     public static final String UNAUTH_ROLE_ARN = "arn:aws:iam::745327864203:role/Cognito_test_CrowdSourceThisUnauth_Role";
     // Note that spaces are not allowed in the table name
     public static final String UserTableName = "User_AWS_Table";
-    public static final String DataTableName = "Weather_Data_Table";
+    public static final String WeatherDataTableName = "Weather_Data_Table";
 
     public static final Random random = new Random();
     public static final String[] NAMES = new String[] {

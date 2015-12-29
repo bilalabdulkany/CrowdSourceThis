@@ -129,7 +129,7 @@ public class UserPreferenceDemoActivity extends Activity {
 			}
 		});
 
-		final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
+		/*final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
 		deleteTableBttn.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
@@ -138,7 +138,7 @@ public class UserPreferenceDemoActivity extends Activity {
 				new DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
 			}
 		});
-
+*/
 		final Button getWeatherData = (Button) findViewById(R.id.GetWeatherData);
 		getWeatherData.setOnClickListener(new View.OnClickListener() {
 
