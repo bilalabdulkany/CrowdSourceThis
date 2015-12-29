@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">UserPreferenceDemo</string>
+    <string name="app_name">CrowdSourceThis</string>
     <string name="step1">1. Create Table</string>
     <string name="step2">2. Insert Users</string>
     <string name="step3">3. List Users</string>

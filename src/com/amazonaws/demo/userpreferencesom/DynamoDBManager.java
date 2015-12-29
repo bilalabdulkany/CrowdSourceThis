@@ -61,39 +61,8 @@ public class DynamoDBManager {
      * Hash key: userNo type N Read Capacity Units: 10 Write Capacity Units: 5
      */
     public static void createTable() {
-/*
-        Log.d(TAG, "Create table called");
-
-        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
-                .ddb();
-
-       KeySchemaElement kse = new KeySchemaElement().withAttributeName(
-                "userNo").withKeyType(KeyType.HASH);
-        
-        AttributeDefinition ad = new AttributeDefinition().withAttributeName(
-                "userNo").withAttributeType(ScalarAttributeType.N);
-        
-       
-        ProvisionedThroughput pt = new ProvisionedThroughput()
-                .withReadCapacityUnits(10l).withWriteCapacityUnits(5l);
-
-        CreateTableRequest request = new CreateTableRequest()
-                .withTableName(Constants.TEST_TABLE_NAME)
-                .withKeySchema(kse).withAttributeDefinitions(ad)
-                
-                .withProvisionedThroughput(pt);
-
-        try {
-            Log.d(TAG, "Sending Create table request");
-            ddb.createTable(request);
-            Log.d(TAG, "Create request response successfully recieved");
-        } catch (AmazonServiceException ex) {
-            Log.e(TAG, "Error sending create table request", ex);
-            UserPreferenceDemoActivity.clientManager
-                    .wipeCredentialsOnAuthError(ex);
-        }*/
-    	
-    	createTable(Constants.TEST_TABLE_NAME, 10l, 5l, "userName", "S", "updateDate", "S");
+    	createTable(Constants.UserTableName, 10l, 10l, "userName", "S", "updateDate", "S");
+    	createTable(Constants.WeatherDataTableName, 10l, 10l, "district", "S", "updateDate", "S");
     }
 
     
@@ -126,6 +95,7 @@ public class DynamoDBManager {
                 ArrayList<KeySchemaElement> keySchema = new ArrayList<KeySchemaElement>();
                 keySchema.add(new KeySchemaElement()
                     .withAttributeName(hashKeyName)
+                    
                     .withKeyType(KeyType.HASH));
                 
                 ArrayList<AttributeDefinition> attributeDefinitions = new ArrayList<AttributeDefinition>();
@@ -190,7 +160,7 @@ public class DynamoDBManager {
                     .ddb();
 
             DescribeTableRequest request = new DescribeTableRequest()
-                    .withTableName(Constants.TEST_TABLE_NAME);
+                    .withTableName(Constants.UserTableName);
             DescribeTableResult result = ddb.describeTable(request);
 
             String status = result.getTable().getTableStatus();
@@ -217,12 +187,8 @@ public class DynamoDBManager {
 
         
         try {
-            //for (int i = 1; i <= 2; i++)
-            //{
                 UserPreference userPreference = new UserPreference();
-               // userPreference.setUserNo(2);
                 userPreference.setUserName("Bilal");
-              
                 userPreference.setLatitude(latitude+"");
                 userPreference.setStatusMessage(status);
                 userPreference.setLongitude(longitude+"");
@@ -230,7 +196,6 @@ public class DynamoDBManager {
                 Log.d(TAG, "Inserting users " + latitude+" "+longitude);
                 mapper.save(userPreference);
                 Log.d(TAG, "Users inserted");
-            //}
         } catch (AmazonServiceException ex) {
             Log.e(TAG, "Error inserting users");
             UserPreferenceDemoActivity.clientManager
@@ -369,7 +334,7 @@ public class DynamoDBManager {
                 .ddb();
 
         DeleteTableRequest request = new DeleteTableRequest()
-                .withTableName(Constants.TEST_TABLE_NAME);
+                .withTableName(Constants.UserTableName);
         try {
             ddb.deleteTable(request);
 
@@ -379,31 +344,14 @@ public class DynamoDBManager {
         }
     }
 
-    @DynamoDBTable(tableName = Constants.TEST_TABLE_NAME)
+    @DynamoDBTable(tableName = Constants.UserTableName)
     public static class UserPreference {
-       // private String userNo;
         private String userName;
         private String statusMessage;
-     
         private String latitude;
         private String longitude;
-        
         private String updateDate;
         
-        
-        
-        
-        
-		
-        /*public String getUserNo() {
-            return userNo;
-        }
-
-        public void setUserNo(String userNo) {
-            this.userNo = userNo;
-        }
-
-*/        
         @DynamoDBRangeKey(attributeName = "updateDate")
         public String getUpdateDate() {
 			return updateDate;
@@ -430,7 +378,8 @@ public class DynamoDBManager {
 		public void setStatusMessage(String statusMessage) {
 			this.statusMessage = statusMessage;
 		}
-		 @DynamoDBAttribute(attributeName = "longitude")
+		
+		@DynamoDBAttribute(attributeName = "longitude")
 		public String getLongitude() {
 			return longitude;
 		}
@@ -439,7 +388,6 @@ public class DynamoDBManager {
 			this.longitude = longitude;
 		}
 
-		
 		@DynamoDBHashKey(attributeName = "userName")
         public String getUserName() {
             return userName;
@@ -449,19 +397,90 @@ public class DynamoDBManager {
             this.userName = userName;
         }
 
-        /*@DynamoDBAttribute(attributeName = "lastName")
-        public String getLastName() {
-            return lastName;
+    }
+    
+    @DynamoDBTable(tableName = Constants.WeatherDataTableName)
+    public static class CurrentWeather {
+        private String meanTemp;
+        private String meanHumidity;
+        private String meanWind;
+        private String precipitation;
+        private int dengueCases;
+        private String latitude;
+        private String longitude;
+        private String updateDate;
+        
+        @DynamoDBRangeKey(attributeName = "updateDate")
+        public String getUpdateDate() {
+			return updateDate;
+		}
+        
+        @DynamoDBAttribute(attributeName = "meanWind")
+		public String getMeanWind() {
+			return meanWind;
+		}
+
+		public void setMeanWind(String meanWind) {
+			this.meanWind = meanWind;
+		}
+
+		@DynamoDBAttribute(attributeName = "precipitation")
+		public String getPrecipitation() {
+			return precipitation;
+		}
+
+		public void setPrecipitation(String precipitation) {
+			this.precipitation = precipitation;
+		}
+
+		@DynamoDBAttribute(attributeName = "dengueCases")
+		public int getDengueCases() {
+			return dengueCases;
+		}
+
+		public void setDengueCases(int dengueCases) {
+			this.dengueCases = dengueCases;
+		}
+
+		public void setUpdateDate(String updateDate) {
+			this.updateDate = updateDate;
+		}
+
+		@DynamoDBAttribute(attributeName = "latitude")
+        public String getLatitude() {
+			return latitude;
+		}
+
+		public void setLatitude(String latitude) {
+			this.latitude = latitude;
+		}
+		
+		@DynamoDBAttribute(attributeName = "meanHumidity")
+        public String getMeanHumidity() {
+			return meanHumidity;
+		}
+
+		public void setMeanHumidity(String meanHumidity) {
+			this.meanHumidity = meanHumidity;
+		}
+		
+		@DynamoDBAttribute(attributeName = "longitude")
+		public String getLongitude() {
+			return longitude;
+		}
+
+		public void setLongitude(String longitude) {
+			this.longitude = longitude;
+		}
+
+		@DynamoDBHashKey(attributeName = "meanTemp")
+        public String getMeanTemp() {
+            return meanTemp;
         }
 
-        public void setLastName(String lastName) {
-            this.lastName = lastName;
+        public void setMeanTemp(String meanTemp) {
+            this.meanTemp = meanTemp;
         }
-*/
-  
 
-       
-
-       
     }
 }

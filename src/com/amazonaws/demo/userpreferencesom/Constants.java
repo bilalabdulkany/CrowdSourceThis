@@ -23,7 +23,8 @@ public class Constants {
     public static final String IDENTITY_POOL_ID = "us-east-1:71a334e2-e0aa-447f-8c9b-f62357ce904a";
     public static final String UNAUTH_ROLE_ARN = "arn:aws:iam::745327864203:role/Cognito_test_CrowdSourceThisUnauth_Role";
     // Note that spaces are not allowed in the table name
-    public static final String TEST_TABLE_NAME = "test_AWS_Table";
+    public static final String UserTableName = "User_AWS_Table";
+    public static final String WeatherDataTableName = "Weather_Data_Table";
 
     public static final Random random = new Random();
     public static final String[] NAMES = new String[] {
