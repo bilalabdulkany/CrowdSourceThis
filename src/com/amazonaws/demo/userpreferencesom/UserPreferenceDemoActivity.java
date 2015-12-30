@@ -76,18 +76,9 @@ public class UserPreferenceDemoActivity extends Activity {
 			alert.showAlertDialog(UserPreferenceDemoActivity.this, "Internet Connection Error",
 					"Please connect to working Internet connection", false);
 			// stop executing code by return
-			return;
+			//return;
 		}
-		if (gps.canGetLocation()) {
-			Log.d("Your Location", "latitude:" + gps.getLatitude() + ", longitude: " + gps.getLongitude());
-		} else {
-			// Can't get user's current location
-			alert.showAlertDialog(UserPreferenceDemoActivity.this, "GPS Status",
-					"Couldn't get location information. Please enable GPS",
-					false);
-			// stop executing code by return
-			return;
-		}
+		
 
 		clientManager = new AmazonClientManager(this);
 
@@ -338,7 +329,7 @@ public class UserPreferenceDemoActivity extends Activity {
 					if (type.equalsIgnoreCase("weather")) {
 
 						JSONArray jsonMainNode = jsonResponse.optJSONArray("weather");
-
+						JSONObject jsonMain = jsonResponse.optJSONObject("main");
 						/*********** Process each JSON Node ************/
 
 						int lengthJsonArr = jsonMainNode.length();
@@ -347,16 +338,19 @@ public class UserPreferenceDemoActivity extends Activity {
 						{
 							/****** Get Object for each JSON node. ***********/
 							JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
+							Double jsonChild=jsonMain.getDouble("temp");
 
 							/******* Fetch node values **********/
 							String main = jsonChildNode.optString("main").toString();
+							String temp = jsonChild+"";
 							String longit = jsonChildNode.optString("description").toString();
 							String icon = jsonChildNode.optString("icon").toString();
 
 							OutputData += " Name           : " + main + "  " + "longitude      : " + longit + "  "
 									+ "Time                : " + icon + " "
 									+ "-------------------------------------------------";
-							Log.i("Main", main);
+							Log.i("Description", main);
+							Log.i("Temp", temp);
 							iconCode = icon;
 							
 							
