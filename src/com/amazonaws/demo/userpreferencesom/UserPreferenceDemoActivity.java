@@ -54,14 +54,40 @@ public class UserPreferenceDemoActivity extends Activity {
 	private double latitude = 0f;
 	private double longitude = 0f;
 	private String iconCode ="01d";
+	com.scjp.tracker.AlertDialogManager alert = new com.scjp.tracker.AlertDialogManager();
 	 ImageView img;
 	    Bitmap bitmap;
+	 // flag for Internet connection status
+		Boolean isInternetPresent = false;
+	private com.scjp.tracker.ConnectionDetector cd;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		cd = new com.scjp.tracker.ConnectionDetector(getApplicationContext());
+
+		// Check if Internet present
+		isInternetPresent = cd.isConnectingToInternet();
+		if (!isInternetPresent) {
+			// Internet Connection is not present
+			alert.showAlertDialog(UserPreferenceDemoActivity.this, "Internet Connection Error",
+					"Please connect to working Internet connection", false);
+			// stop executing code by return
+			return;
+		}
+		if (gps.canGetLocation()) {
+			Log.d("Your Location", "latitude:" + gps.getLatitude() + ", longitude: " + gps.getLongitude());
+		} else {
+			// Can't get user's current location
+			alert.showAlertDialog(UserPreferenceDemoActivity.this, "GPS Status",
+					"Couldn't get location information. Please enable GPS",
+					false);
+			// stop executing code by return
+			return;
+		}
 
 		clientManager = new AmazonClientManager(this);
 
