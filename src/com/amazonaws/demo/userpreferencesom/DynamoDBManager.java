@@ -421,7 +421,7 @@ public class DynamoDBManager {
 		}
 
 		public void setMeanWind(String meanWind) {
-			this.meanWind = meanWind;
+			this.meanWind = meanWind; 
 		}
 
 		@DynamoDBAttribute(attributeName = "precipitation")
