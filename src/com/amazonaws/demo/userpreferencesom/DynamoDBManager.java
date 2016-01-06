@@ -204,6 +204,45 @@ public class DynamoDBManager {
         	Log.e(TAG, "Error in inserting users");
         }
     }
+    
+    /* Inserts ten users with userNo from 1 to 10 and random names.
+    */
+   public static void insertCurrentWeather(String district,String meanTemp,
+    String meanHumidity,
+    String meanWind,
+    String precipitation,
+    int dengueCases,
+    String latitude,
+    String longitude) {
+       AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+               .ddb();
+       DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+       SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+       String updateDate = dateFormatter.format(new Date());
+
+       
+       try {
+               CurrentWeather currentWeather = new CurrentWeather();
+               currentWeather.setDistrict(district);
+               currentWeather.setMeanHumidity(meanHumidity);
+               currentWeather.setLatitude(latitude+"");
+               currentWeather.setMeanTemp(meanTemp);
+               currentWeather.setLongitude(longitude+"");
+               currentWeather.setMeanTemp(meanTemp);
+               currentWeather.setMeanWind(meanWind);
+               currentWeather.setPrecipitation(precipitation);
+               currentWeather.setUpdateDate(updateDate);
+               Log.d(TAG, "Inserting Weather " + latitude+" "+longitude+" "+meanHumidity+" "+meanTemp+ " "+precipitation);
+               mapper.save(currentWeather);
+               Log.d(TAG, "Weather Data inserted!");
+       } catch (AmazonServiceException ex) {
+           Log.e(TAG, "Error inserting weather");
+           UserPreferenceDemoActivity.clientManager
+                   .wipeCredentialsOnAuthError(ex);
+       }catch(Exception e){
+       	Log.e(TAG, "Error in inserting users");
+       }
+   }
 
     /*
      * Scans the table and returns the list of users.
@@ -335,8 +374,11 @@ public class DynamoDBManager {
 
         DeleteTableRequest request = new DeleteTableRequest()
                 .withTableName(Constants.UserTableName);
+        DeleteTableRequest reqWeather = new DeleteTableRequest().withTableName(Constants.WeatherDataTableName);
+        
         try {
             ddb.deleteTable(request);
+            ddb.deleteTable(reqWeather);
 
         } catch (AmazonServiceException ex) {
             UserPreferenceDemoActivity.clientManager
@@ -409,10 +451,18 @@ public class DynamoDBManager {
         private String latitude;
         private String longitude;
         private String updateDate;
-        
+        private String district;
         @DynamoDBRangeKey(attributeName = "updateDate")
         public String getUpdateDate() {
 			return updateDate;
+		}
+        
+        @DynamoDBHashKey(attributeName = "district")
+        public String getDistrict() {
+            return district;
+        }
+        public void setDistrict(String District) {
+			this.district = District;
 		}
         
         @DynamoDBAttribute(attributeName = "meanWind")
@@ -473,7 +523,7 @@ public class DynamoDBManager {
 			this.longitude = longitude;
 		}
 
-		@DynamoDBHashKey(attributeName = "meanTemp")
+		@DynamoDBAttribute(attributeName = "meanTemp")
         public String getMeanTemp() {
             return meanTemp;
         }
@@ -483,4 +533,6 @@ public class DynamoDBManager {
         }
 
     }
+
+	
 }

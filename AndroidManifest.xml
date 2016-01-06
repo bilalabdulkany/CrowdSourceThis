@@ -5,8 +5,13 @@
     android:versionName="1.0" >
 
     <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="20"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+ 
+    <!-- Network State Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- Access Location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:icon="@drawable/ic_launcher"
