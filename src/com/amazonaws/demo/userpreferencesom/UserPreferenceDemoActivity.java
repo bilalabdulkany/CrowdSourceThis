@@ -341,13 +341,13 @@ public class UserPreferenceDemoActivity extends Activity {
 						{
 							/****** Get Object for each JSON node. ***********/
 							JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
-							temp=jsonMain.getDouble("temp");
+							temp=jsonMain.getDouble("temp")-273.15;
 							
 							pressure=jsonMain.getDouble("pressure");
 							humidity=jsonMain.getDouble("humidity");
 							/******* Fetch node values **********/
 							String main = jsonChildNode.optString("main").toString();
-							String weatherdata ="T:"+ (temp-273.15)+" P:"+pressure+ " H:"+humidity;
+							String weatherdata ="T:"+ (temp)+" P:"+pressure+ " H:"+humidity;
 							String longit = jsonChildNode.optString("description").toString();
 							String icon = jsonChildNode.optString("icon").toString();
 

@@ -523,7 +523,7 @@ public class DynamoDBManager {
 			this.longitude = longitude;
 		}
 
-		@DynamoDBHashKey(attributeName = "meanTemp")
+		@DynamoDBAttribute(attributeName = "meanTemp")
         public String getMeanTemp() {
             return meanTemp;
         }
