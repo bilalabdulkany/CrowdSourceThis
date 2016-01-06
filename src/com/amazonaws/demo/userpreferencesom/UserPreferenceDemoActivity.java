@@ -53,6 +53,10 @@ public class UserPreferenceDemoActivity extends Activity {
 	GPSTracker gps = null;
 	private double latitude = 0f;
 	private double longitude = 0f;
+	private double temp=0f;
+	private double pressure=0f;
+	private double humidity=0f;
+	private String district="Null";
 	private String iconCode ="01d";
 	com.scjp.tracker.AlertDialogManager alert = new com.scjp.tracker.AlertDialogManager();
 	 ImageView img;
@@ -131,7 +135,6 @@ public class UserPreferenceDemoActivity extends Activity {
 
 			public void onClick(View v) {
 				Log.i(TAG, "insertUsersBttn clicked.");
-
 				new DynamoDBManagerTask().execute(DynamoDBManagerType.INSERT_USER);
 			}
 		});
@@ -146,7 +149,7 @@ public class UserPreferenceDemoActivity extends Activity {
 			}
 		});
 
-		/*final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
+		final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
 		deleteTableBttn.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
@@ -155,7 +158,7 @@ public class UserPreferenceDemoActivity extends Activity {
 				new DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
 			}
 		});
-*/
+
 		final Button getWeatherData = (Button) findViewById(R.id.GetWeatherData);
 		getWeatherData.setOnClickListener(new View.OnClickListener() {
 
@@ -338,11 +341,13 @@ public class UserPreferenceDemoActivity extends Activity {
 						{
 							/****** Get Object for each JSON node. ***********/
 							JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
-							Double jsonChild=jsonMain.getDouble("temp");
-
+							temp=jsonMain.getDouble("temp");
+							
+							pressure=jsonMain.getDouble("pressure");
+							humidity=jsonMain.getDouble("humidity");
 							/******* Fetch node values **********/
 							String main = jsonChildNode.optString("main").toString();
-							String temp = jsonChild+"";
+							String weatherdata ="T:"+ (temp-273.15)+" P:"+pressure+ " H:"+humidity;
 							String longit = jsonChildNode.optString("description").toString();
 							String icon = jsonChildNode.optString("icon").toString();
 
@@ -350,7 +355,7 @@ public class UserPreferenceDemoActivity extends Activity {
 									+ "Time                : " + icon + " "
 									+ "-------------------------------------------------";
 							Log.i("Description", main);
-							Log.i("Temp", temp);
+							Log.i("Weather: ", weatherdata);
 							iconCode = icon;
 							
 							
@@ -381,6 +386,7 @@ public class UserPreferenceDemoActivity extends Activity {
 									+ "Time                : " + latid + " "
 									+ "-------------------------------------------------";
 							Log.i("District", name);
+							district=name;
 
 							Toast.makeText(getApplicationContext(), "District:" + name, Toast.LENGTH_SHORT).show();
 						}
@@ -443,6 +449,7 @@ public class UserPreferenceDemoActivity extends Activity {
 					Log.e("Inserting", "Inserting users...");
 					Log.e("Inserting", "Status message..." + statusMessage);
 					DynamoDBManager.insertUsers(statusMessage, latitude, longitude);
+					DynamoDBManager.insertCurrentWeather(district,temp+"", humidity+"","10", pressure+"", 10, latitude+"", longitude+"");
 				}
 			} else if (types[0] == DynamoDBManagerType.LIST_USERS) {
 				if (tableStatus.equalsIgnoreCase("ACTIVE")) {
