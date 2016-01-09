@@ -16,11 +16,14 @@
 package com.amazonaws.demo.userpreferencesom;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -53,16 +56,16 @@ public class UserPreferenceDemoActivity extends Activity {
 	GPSTracker gps = null;
 	private double latitude = 0f;
 	private double longitude = 0f;
-	private double temp=0f;
-	private double pressure=0f;
-	private double humidity=0f;
-	private String district="Null";
-	private String iconCode ="01d";
+	private double temp = 0f;
+	private double pressure = 0f;
+	private double humidity = 0f;
+	private String district = "Null";
+	private String iconCode = "01d";
 	com.scjp.tracker.AlertDialogManager alert = new com.scjp.tracker.AlertDialogManager();
-	 ImageView img;
-	    Bitmap bitmap;
-	 // flag for Internet connection status
-		Boolean isInternetPresent = false;
+	ImageView img;
+	Bitmap bitmap;
+	// flag for Internet connection status
+	Boolean isInternetPresent = false;
 	private com.scjp.tracker.ConnectionDetector cd;
 
 	@Override
@@ -70,7 +73,7 @@ public class UserPreferenceDemoActivity extends Activity {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
+
 		cd = new com.scjp.tracker.ConnectionDetector(getApplicationContext());
 
 		// Check if Internet present
@@ -80,14 +83,13 @@ public class UserPreferenceDemoActivity extends Activity {
 			alert.showAlertDialog(UserPreferenceDemoActivity.this, "Internet Connection Error",
 					"Please connect to working Internet connection", false);
 			// stop executing code by return
-			//return;
+			// return;
 		}
-		
 
 		clientManager = new AmazonClientManager(this);
 
 		txtStatus = (EditText) findViewById(R.id.txtStatus);
-		img = (ImageView)findViewById(R.id.img);
+		img = (ImageView) findViewById(R.id.img);
 
 		// gps=new GPSTracker(UserPreferenceDemoActivity.this);
 
@@ -165,50 +167,115 @@ public class UserPreferenceDemoActivity extends Activity {
 			public void onClick(View v) {
 
 				Log.i(TAG, "getWeatherData clicked.");
+				HashMap<String, String> urlMap = new HashMap<String, String>();
+
 				String serverURL = "http://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon="
 						+ longitude + "&appid=f428c77a063e968735f60f9c82878238";
-				String iconUrl="http://openweathermap.org/img/w/"+iconCode+".png";
+				String iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png";
 				String type = "weather";
-				new LongOperation().execute(serverURL, type,iconUrl);
+
+				urlMap.put("weather", serverURL);
+				urlMap.put("weatherType", type);
+
+				serverURL = "http://api.geonames.org/findNearbyPostalCodesJSON?lat=" + latitude + "&lng=" + longitude
+						+ "&username=merdocbilal";
+				type = "district";
+				urlMap.put("district", serverURL);
+				//urlMap.put("districtType", type);
+				urlMap.put("icon", iconUrl);
+
+				new LongOperation().execute(urlMap);
+				// executing district
+
+				// new LongOperation().execute(serverURL, type, iconUrl);
+
+				
 				// new
 				// DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
 			}
 		});
 
-		final Button getDistrict = (Button) findViewById(R.id.GetDistrict);
-		getDistrict.setOnClickListener(new View.OnClickListener() {
-
-			public void onClick(View v) {
-				Log.i(TAG, "District clicked.");
-				String serverURL = "http://api.geonames.org/findNearbyPostalCodesJSON?lat=" + latitude + "&lng="
-						+ longitude + "&username=merdocbilal";
-				String iconUrl="http://openweathermap.org/img/w/"+iconCode+".png";
-				String type = "district";
-				new LongOperation().execute(serverURL, type,iconUrl);
-				// new
-				// DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
-			}
-		});
-		
-
+		/*
+		 * final Button getDistrict = (Button) findViewById(R.id.GetDistrict);
+		 * getDistrict.setOnClickListener(new View.OnClickListener() {
+		 * 
+		 * public void onClick(View v) { Log.i(TAG, "District clicked."); String
+		 * serverURL = "http://api.geonames.org/findNearbyPostalCodesJSON?lat="
+		 * + latitude + "&lng=" + longitude + "&username=merdocbilal"; String
+		 * iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png";
+		 * String type = "district"; new LongOperation().execute()); // new //
+		 * DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP); } });
+		 */
 	}
 
 	// Class with extends AsyncTask class
 
 	// Get Weather Class
 
-	private class LongOperation extends AsyncTask<String, Void, Bitmap> {
+	private class LongOperation extends AsyncTask<HashMap<String, String>, Void, Bitmap> {
 
 		// Required initialization
 
 		private final HttpClient Client = new DefaultHttpClient();
 		private String Content;
+		private String weatherContent;
+		private String districtContent;
 		private String Error = null;
 		private ProgressDialog Dialog = new ProgressDialog(UserPreferenceDemoActivity.this);
 		String data = "";
 		String type = "";
 		String uiUpdate, jsonParsed, serverText;
-		
+
+		private String getJSONContents(URL url) {
+			BufferedReader reader = null;
+
+			// Send data
+			try {
+
+				// Defined URL where to send data
+				// URL url = new URL(urls[0]);
+				// type = urls[1];
+
+				// Send POST data request
+
+				URLConnection conn = url.openConnection();
+				conn.setDoOutput(true);
+				OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+				wr.write(data);
+				wr.flush();
+
+				// Get the server response
+
+				reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				StringBuilder sb = new StringBuilder();
+				String line = null;
+
+				// Read Server Response
+				while ((line = reader.readLine()) != null) {
+					// Append server response in string
+					sb.append(line + "");
+				}
+
+				// Append Server Response To Content String
+				Content = sb.toString();
+				// bitmap = BitmapFactory.decodeStream((InputStream)new
+				// URL(urls[2]).getContent());
+
+			} catch (Exception ex) {
+				Error = ex.getMessage();
+			} finally {
+				try {
+
+					reader.close();
+
+				}
+
+				catch (Exception ex) {
+				}
+				return Content;
+			}
+
+		}
 
 		// TextView uiUpdate = (TextView) findViewById(R.id.output);
 		// TextView jsonParsed = (TextView) findViewById(R.id.jsonParsed);
@@ -234,61 +301,44 @@ public class UserPreferenceDemoActivity extends Activity {
 		}
 
 		// Call after onPreExecute method
-		protected Bitmap doInBackground(String... urls) {
+		protected Bitmap doInBackground(HashMap<String, String>... map) {
 
 			/************ Make Post Call To Web Server ***********/
+		//	type = map[0].get("weatherType").toString();// urls[1];
+
 			BufferedReader reader = null;
-
-			// Send data
 			try {
+				Log.i("WEATHER", map[0].get("weather").toString());
+				Log.i("DISTRICT", map[0].get("district").toString());
+				weatherContent = getJSONContents(new URL(map[0].get("weather").toString()));// urls[0]));
+				//Log.i("WEATHER", map[0].get("weather").toString());
+				districtContent = getJSONContents(new URL(map[0].get("district").toString()));// urls[0]));
+				bitmap = BitmapFactory.decodeStream((InputStream) new URL(map[0].get("icon").toString()).getContent());
+				if (bitmap != null) {
+					img.setImageBitmap(bitmap);
+					// Dialog.dismiss();
 
-				// Defined URL where to send data
-				URL url = new URL(urls[0]);
-				type = urls[1];
+				} else {
 
-				// Send POST data request
+					Dialog.dismiss();
+					Toast.makeText(UserPreferenceDemoActivity.this, "Image Does Not exist or Network Error",
+							Toast.LENGTH_SHORT).show();
 
-				URLConnection conn = url.openConnection();
-				conn.setDoOutput(true);
-				OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-				wr.write(data);
-				wr.flush();
-
-				// Get the server response
-
-				reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-				StringBuilder sb = new StringBuilder();
-				String line = null;
-
-				// Read Server Response
-				while ((line = reader.readLine()) != null) {
-					// Append server response in string
-					sb.append(line + "");
 				}
-
-				// Append Server Response To Content String
-				Content = sb.toString();
-				bitmap = BitmapFactory.decodeStream((InputStream)new URL(urls[2]).getContent());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}catch(Exception e){
+				Log.e("Error on map", e.getMessage());
 				
-			} catch (Exception ex) {
-				Error = ex.getMessage();
-			} finally {
-				try {
-
-					reader.close();
-					
-				}
-
-				catch (Exception ex) {
-				}
-				return bitmap;
 			}
-			
-			
-			
-
+			// Send data
+			return bitmap;
 			/*****************************************************/
-			
+
 		}
 
 		protected void onPostExecute(Bitmap bitmap) {
@@ -296,7 +346,6 @@ public class UserPreferenceDemoActivity extends Activity {
 
 			// Close progress dialog
 			Dialog.dismiss();
-			
 
 			if (Error != null) {
 
@@ -322,16 +371,22 @@ public class UserPreferenceDemoActivity extends Activity {
 					 * Creates a new JSONObject with name/value mappings from
 					 * the JSON string.
 					 ********/
-					jsonResponse = new JSONObject(Content);
-
+					jsonResponse = new JSONObject(weatherContent);
+					JSONArray jsonMainNode;
+					JSONObject jsonChildNode;
 					/*****
 					 * Returns the value mapped by name if it exists and is a
 					 * JSONArray.
 					 ***/
 					/******* Returns null otherwise. *******/
-					if (type.equalsIgnoreCase("weather")) {
 
-						JSONArray jsonMainNode = jsonResponse.optJSONArray("weather");
+				/**
+				 * Getting the json parsed format for Weather
+				 */
+					
+					{
+
+						jsonMainNode = jsonResponse.optJSONArray("weather");
 						JSONObject jsonMain = jsonResponse.optJSONObject("main");
 						/*********** Process each JSON Node ************/
 
@@ -340,14 +395,14 @@ public class UserPreferenceDemoActivity extends Activity {
 						// for(int i=0; i < lengthJsonArr; i++)
 						{
 							/****** Get Object for each JSON node. ***********/
-							JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
-							temp=jsonMain.getDouble("temp")-273.15;
-							
-							pressure=jsonMain.getDouble("pressure");
-							humidity=jsonMain.getDouble("humidity");
+							jsonChildNode = jsonMainNode.getJSONObject(0);
+							temp = jsonMain.getDouble("temp") - 273.15;
+
+							pressure = jsonMain.getDouble("pressure");
+							humidity = jsonMain.getDouble("humidity");
 							/******* Fetch node values **********/
 							String main = jsonChildNode.optString("main").toString();
-							String weatherdata ="T:"+ (temp)+" P:"+pressure+ " H:"+humidity;
+							String weatherdata = "T:" + (temp) + " P:" + pressure + " H:" + humidity;
 							String longit = jsonChildNode.optString("description").toString();
 							String icon = jsonChildNode.optString("icon").toString();
 
@@ -357,16 +412,20 @@ public class UserPreferenceDemoActivity extends Activity {
 							Log.i("Description", main);
 							Log.i("Weather: ", weatherdata);
 							iconCode = icon;
-							
-							
 
 							Toast.makeText(getApplicationContext(), "Main:" + main, Toast.LENGTH_SHORT).show();
-							
-							 
-						}
-					} else if (type.equalsIgnoreCase("district")) {
 
-						JSONArray jsonMainNode = jsonResponse.optJSONArray("postalCodes");
+						}
+					}
+
+					/*
+					 * Getting the json parsed format for District
+					 */
+					{
+
+						jsonResponse = new JSONObject(districtContent);
+
+						jsonMainNode = jsonResponse.optJSONArray("postalCodes");
 
 						/*********** Process each JSON Node ************/
 
@@ -375,7 +434,7 @@ public class UserPreferenceDemoActivity extends Activity {
 						// for(int i=0; i < lengthJsonArr; i++)
 						{
 							/****** Get Object for each JSON node. ***********/
-							JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
+							jsonChildNode = jsonMainNode.getJSONObject(0);
 
 							/******* Fetch node values **********/
 							String name = jsonChildNode.optString("adminName2").toString();
@@ -386,22 +445,16 @@ public class UserPreferenceDemoActivity extends Activity {
 									+ "Time                : " + latid + " "
 									+ "-------------------------------------------------";
 							Log.i("District", name);
-							district=name;
+							district = name;
 
 							Toast.makeText(getApplicationContext(), "District:" + name, Toast.LENGTH_SHORT).show();
 						}
 					}
+
 					
-					if(bitmap != null){
-			             img.setImageBitmap(bitmap);
-			             //Dialog.dismiss();
-			 
-			             }else{
-			 
-			             Dialog.dismiss();
-			             Toast.makeText(UserPreferenceDemoActivity.this, "Image Does Not exist or Network Error", Toast.LENGTH_SHORT).show();
-			 
-			             }
+					Toast.makeText(getApplicationContext(),
+							"District:" + district + "\n " + "Weather: T:" + temp + " P:" + pressure + " H:" + humidity,
+							Toast.LENGTH_LONG).show();
 					/******************
 					 * End Parse Response JSON Data
 					 *************/
@@ -416,8 +469,7 @@ public class UserPreferenceDemoActivity extends Activity {
 				}
 
 			}
-			
-			
+
 		}
 
 	}
@@ -449,7 +501,8 @@ public class UserPreferenceDemoActivity extends Activity {
 					Log.e("Inserting", "Inserting users...");
 					Log.e("Inserting", "Status message..." + statusMessage);
 					DynamoDBManager.insertUsers(statusMessage, latitude, longitude);
-					DynamoDBManager.insertCurrentWeather(district,temp+"", humidity+"","10", pressure+"", 10, latitude+"", longitude+"");
+					DynamoDBManager.insertCurrentWeather(district, temp + "", humidity + "", "10", pressure + "", 10,
+							latitude + "", longitude + "");
 				}
 			} else if (types[0] == DynamoDBManagerType.LIST_USERS) {
 				if (tableStatus.equalsIgnoreCase("ACTIVE")) {
