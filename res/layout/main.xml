@@ -72,15 +72,15 @@
         android:id="@+id/img"
        />
     
-         <Button
-        android:paddingTop="10dp"
-        android:id="@+id/GetDistrict"
-        android:text="@string/district"
-        android:clickable="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
-        android:layout_gravity="center_horizontal"
-    /> 
+<!--          <Button -->
+<!--         android:paddingTop="10dp" -->
+<!--         android:id="@+id/GetDistrict" -->
+<!--         android:text="@string/district" -->
+<!--         android:clickable="true" -->
+<!--         android:layout_width="wrap_content" -->
+<!--         android:layout_height="wrap_content"  -->
+<!--         android:layout_gravity="center_horizontal" -->
+<!--     />  -->
     </LinearLayout>
 
 </LinearLayout>

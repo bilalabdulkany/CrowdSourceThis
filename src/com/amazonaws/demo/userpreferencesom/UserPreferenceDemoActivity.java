@@ -314,17 +314,6 @@ public class UserPreferenceDemoActivity extends Activity {
 				//Log.i("WEATHER", map[0].get("weather").toString());
 				districtContent = getJSONContents(new URL(map[0].get("district").toString()));// urls[0]));
 				bitmap = BitmapFactory.decodeStream((InputStream) new URL(map[0].get("icon").toString()).getContent());
-				if (bitmap != null) {
-					img.setImageBitmap(bitmap);
-					// Dialog.dismiss();
-
-				} else {
-
-					Dialog.dismiss();
-					Toast.makeText(UserPreferenceDemoActivity.this, "Image Does Not exist or Network Error",
-							Toast.LENGTH_SHORT).show();
-
-				}
 			} catch (MalformedURLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -405,6 +394,10 @@ public class UserPreferenceDemoActivity extends Activity {
 							String weatherdata = "T:" + (temp) + " P:" + pressure + " H:" + humidity;
 							String longit = jsonChildNode.optString("description").toString();
 							String icon = jsonChildNode.optString("icon").toString();
+							
+							String iconUrl = "http://openweathermap.org/img/w/" + icon + ".png";
+							
+							
 
 							OutputData += " Name           : " + main + "  " + "longitude      : " + longit + "  "
 									+ "Time                : " + icon + " "
@@ -451,7 +444,17 @@ public class UserPreferenceDemoActivity extends Activity {
 						}
 					}
 
-					
+					if (bitmap != null) {
+						img.setImageBitmap(bitmap);
+						// Dialog.dismiss();
+
+					} else {
+
+						Dialog.dismiss();
+						Toast.makeText(UserPreferenceDemoActivity.this, "Image Does Not exist or Network Error",
+								Toast.LENGTH_SHORT).show();
+
+					}
 					Toast.makeText(getApplicationContext(),
 							"District:" + district + "\n " + "Weather: T:" + temp + " P:" + pressure + " H:" + humidity,
 							Toast.LENGTH_LONG).show();
