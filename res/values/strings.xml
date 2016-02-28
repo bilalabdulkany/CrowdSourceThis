@@ -5,6 +5,7 @@
     <string name="step2">Update Stats</string>
     <string name="step3">List Users</string>
     <string name="step4">4. Delete Table</string>
+    <string name="predict">Predict Dengue Rate</string>
     <string name="color_theme">Color Theme</string>
     <string name="auto_login">Auto Login</string>
     <string name="vibrate">Vibrate</string>

@@ -122,7 +122,7 @@ public class UserPreferenceDemoActivity extends Activity {
 			}
 		});
 
-		final Button createTableBttn = (Button) findViewById(R.id.create_table_bttn);
+		/*final Button createTableBttn = (Button) findViewById(R.id.create_table_bttn);
 		createTableBttn.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
@@ -131,7 +131,7 @@ public class UserPreferenceDemoActivity extends Activity {
 				new DynamoDBManagerTask().execute(DynamoDBManagerType.CREATE_TABLE);
 			}
 		});
-
+*/
 		final Button insertUsersBttn = (Button) findViewById(R.id.insert_users_bttn);
 		insertUsersBttn.setOnClickListener(new View.OnClickListener() {
 
@@ -151,7 +151,7 @@ public class UserPreferenceDemoActivity extends Activity {
 			}
 		});
 
-		final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
+		/*final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
 		deleteTableBttn.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
@@ -160,7 +160,18 @@ public class UserPreferenceDemoActivity extends Activity {
 				new DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
 			}
 		});
+*/
+		
+		//Predict Dengue Cases
+		final Button predictButton = (Button) findViewById(R.id.predict_bttn);
+		predictButton.setOnClickListener(new View.OnClickListener() {
 
+			public void onClick(View v) {
+				Log.i(TAG, "PredictBttn clicked.");
+
+				Toast.makeText(getApplicationContext(), "The Model Predicts: "+10+" Dengue Cases today for District of: "+district, Toast.LENGTH_LONG).show();
+			}
+		});
 		final Button getWeatherData = (Button) findViewById(R.id.GetWeatherData);
 		getWeatherData.setOnClickListener(new View.OnClickListener() {
 
@@ -406,7 +417,7 @@ public class UserPreferenceDemoActivity extends Activity {
 							Log.i("Weather: ", weatherdata);
 							iconCode = icon;
 
-							Toast.makeText(getApplicationContext(), "Main:" + main, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getApplicationContext(), "Main:" + main, Toast.LENGTH_LONG).show();
 
 						}
 					}
@@ -440,7 +451,7 @@ public class UserPreferenceDemoActivity extends Activity {
 							Log.i("District", name);
 							district = name;
 
-							Toast.makeText(getApplicationContext(), "District:" + name, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getApplicationContext(), "District:" + name, Toast.LENGTH_LONG).show();
 						}
 					}
 

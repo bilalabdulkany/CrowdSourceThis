@@ -22,12 +22,12 @@
             <requestFocus />
         </EditText>
 
-        <Button
+      <!--   <Button
             android:id="@+id/create_table_bttn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/step1" />
+            android:text="@string/step1" /> -->
 
         <Button android:id="@+id/btnShowLocation" 
         android:layout_width="wrap_content"
@@ -48,14 +48,19 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="@string/step3" />
-
+<!-- 
         <Button
             android:id="@+id/delete_table_bttn"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/step4" />
-        
+            android:text="@string/step4" /> -->
+        <Button
+            android:id="@+id/predict_bttn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/predict" />
         <Button
         android:paddingTop="10dp"
         android:id="@+id/GetWeatherData"
