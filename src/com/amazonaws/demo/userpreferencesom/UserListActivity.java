@@ -52,6 +52,7 @@ public class UserListActivity extends ListActivity {
         Intent intent = new Intent(UserListActivity.this, UserActivity.class);
         intent.putExtra("USER_NAME", items.get(position).getUserName() + "");
         intent.putExtra("UPDATE_DATE", items.get(position).getUpdateDate() + "");
+        
         startActivity(intent);
     }
 

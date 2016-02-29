@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -28,8 +29,12 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.w3c.dom.Text;
 
+import com.amazonaws.demo.userpreferencesom.DynamoDBManager.CurrentWeather;
 import com.amazonaws.demo.userpreferencesom.DynamoDBManager.UserPreference;
 
 public class UserActivity extends Activity {
@@ -37,7 +42,7 @@ public class UserActivity extends Activity {
     private String userName = "";
     private String updateDate = "";
     private UserPreference userInfo = null;
-
+   private CurrentWeather currentWeather=null;
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -51,32 +56,60 @@ public class UserActivity extends Activity {
 
     private void setupActivity() {
 
+    	//User table data
         String userName = userInfo.getUserName();// + " " + userInfo.getUserName();
         String statusView = userInfo.getStatusMessage();
         String latView= userInfo.getLatitude();
         String longView= userInfo.getLongitude();
         String updateDate=userInfo.getUpdateDate();
-
+        
+        //Weather table data
+        String humidity=currentWeather.getMeanHumidity();
+        String temp=currentWeather.getMeanTemp();
+        String windSpeed=currentWeather.getMeanWind();
+        String seaPressure=currentWeather.getSealevelpressure();
+        String district=currentWeather.getDistrict();
+        String city=currentWeather.getCity();
+        
+        
+        //Apply to the view//**UserTable**//
         final TextView textViewUserName = (TextView) findViewById(R.id.textViewUserName);
-        textViewUserName.setText(userName);
+        textViewUserName.setText("User: "+userName);
         
         final TextView textStatus=(TextView)findViewById(R.id.txtStatus_View);
-        textStatus.setText(statusView);
+        textStatus.setText("Dengue Cases: "+statusView);
         
         final TextView updateDateTxt=(TextView)findViewById(R.id.textUpdateDate);
-        updateDateTxt.setText(updateDate);
+        updateDateTxt.setText("Date: "+updateDate);
         
         
         final TextView textLat=(TextView)findViewById(R.id.txtLat);
-        textLat.setText(latView);
+        textLat.setText("Latitude: "+latView);
         
         final TextView textLong=(TextView)findViewById(R.id.txtLong);
-        textLong.setText(longView);
+        textLong.setText("Longitude: "+longView);
         
+        //Apply to the view//**Weather Data**//
+        final TextView textMeanHumidity = (TextView) findViewById(R.id.txtHumidity);
+        textMeanHumidity.setText("Mean Humidity: "+humidity);
+	
+        final TextView textMeanTemp = (TextView) findViewById(R.id.txtTemp);
+        textMeanTemp.setText("Mean Temp: "+temp);
         
-      
+        final TextView textDistrict = (TextView) findViewById(R.id.txtDistrict);
+        textDistrict.setText("District: "+district);
        
-      
+        final TextView textCity = (TextView) findViewById(R.id.txtCity);
+        textCity.setText("City: "+city);
+        
+        
+        final TextView textMeanSeaLevelPressure = (TextView) findViewById(R.id.txtPressure);
+        textMeanSeaLevelPressure.setText("Mean Sea Level Pressure: "+seaPressure+"kPa");
+        
+        final TextView textMeanWind = (TextView) findViewById(R.id.txtWindSpeed);
+        textMeanWind.setText("Mean wind speed kmph: "+windSpeed);
+        
+        
      
     }
 
@@ -84,7 +117,11 @@ public class UserActivity extends Activity {
 
         protected Void doInBackground(Void... voids) {
 
+        	  
             userInfo = DynamoDBManager.getUserPreference(userName,updateDate);
+            Log.e("USERDATA", "got the current user");
+            currentWeather=DynamoDBManager.getCurrentWeatherInstance(userName,updateDate);
+            Log.e("USERDATA", "got the current weather from userdata info");
             return null;
         }
 

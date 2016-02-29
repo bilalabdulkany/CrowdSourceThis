@@ -43,5 +43,49 @@
         android:layout_height="wrap_content"
         android:text="Longitude"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+   
+    <TextView
+        android:id="@+id/txtSpace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="---------------------"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <TextView
+        android:id="@+id/txtDistrict"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="District"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <TextView
+        android:id="@+id/txtCity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="City"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+       <TextView
+        android:id="@+id/txtHumidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mean Humidity"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+ 	   <TextView
+        android:id="@+id/txtTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mean Temperature"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <TextView
+        android:id="@+id/txtPressure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mean Sea Level Pressure"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <TextView
+        android:id="@+id/txtWindSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mean Wind Speed"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+ 
 
 </LinearLayout>

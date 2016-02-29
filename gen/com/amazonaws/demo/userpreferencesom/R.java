@@ -19,18 +19,27 @@ public final class R {
         public static final int success=0x7f020002;
     }
     public static final class id {
-        public static final int GetWeatherData=0x7f060005;
-        public static final int btnShowLocation=0x7f060001;
-        public static final int img=0x7f060006;
-        public static final int insert_users_bttn=0x7f060002;
-        public static final int list_users_bttn=0x7f060003;
-        public static final int predict_bttn=0x7f060004;
-        public static final int textUpdateDate=0x7f060009;
-        public static final int textViewUserName=0x7f060007;
-        public static final int txtLat=0x7f06000a;
-        public static final int txtLong=0x7f06000b;
+        public static final int GetWeatherData=0x7f060007;
+        public static final int btnShowLocation=0x7f060002;
+        public static final int create_table_bttn=0x7f060001;
+        public static final int delete_table_bttn=0x7f060005;
+        public static final int img=0x7f060008;
+        public static final int insert_users_bttn=0x7f060003;
+        public static final int list_users_bttn=0x7f060004;
+        public static final int predict_bttn=0x7f060006;
+        public static final int textUpdateDate=0x7f06000b;
+        public static final int textViewUserName=0x7f060009;
+        public static final int txtCity=0x7f060010;
+        public static final int txtDistrict=0x7f06000f;
+        public static final int txtHumidity=0x7f060011;
+        public static final int txtLat=0x7f06000c;
+        public static final int txtLong=0x7f06000d;
+        public static final int txtPressure=0x7f060013;
+        public static final int txtSpace=0x7f06000e;
         public static final int txtStatus=0x7f060000;
-        public static final int txtStatus_View=0x7f060008;
+        public static final int txtStatus_View=0x7f06000a;
+        public static final int txtTemp=0x7f060012;
+        public static final int txtWindSpeed=0x7f060014;
     }
     public static final class layout {
         public static final int main=0x7f030000;

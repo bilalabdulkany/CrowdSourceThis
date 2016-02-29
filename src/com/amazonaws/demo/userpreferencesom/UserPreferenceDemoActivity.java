@@ -23,6 +23,8 @@ import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.http.client.HttpClient;
@@ -61,6 +63,8 @@ public class UserPreferenceDemoActivity extends Activity {
 	private double humidity = 0f;
 	private String district = "Null";
 	private String iconCode = "01d";
+	private String Maincity="Null";
+	
 	com.scjp.tracker.AlertDialogManager alert = new com.scjp.tracker.AlertDialogManager();
 	ImageView img;
 	Bitmap bitmap;
@@ -122,7 +126,7 @@ public class UserPreferenceDemoActivity extends Activity {
 			}
 		});
 
-		/*final Button createTableBttn = (Button) findViewById(R.id.create_table_bttn);
+		final Button createTableBttn = (Button) findViewById(R.id.create_table_bttn);
 		createTableBttn.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
@@ -131,7 +135,7 @@ public class UserPreferenceDemoActivity extends Activity {
 				new DynamoDBManagerTask().execute(DynamoDBManagerType.CREATE_TABLE);
 			}
 		});
-*/
+
 		final Button insertUsersBttn = (Button) findViewById(R.id.insert_users_bttn);
 		insertUsersBttn.setOnClickListener(new View.OnClickListener() {
 
@@ -151,7 +155,7 @@ public class UserPreferenceDemoActivity extends Activity {
 			}
 		});
 
-		/*final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
+		final Button deleteTableBttn = (Button) findViewById(R.id.delete_table_bttn);
 		deleteTableBttn.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
@@ -160,7 +164,7 @@ public class UserPreferenceDemoActivity extends Activity {
 				new DynamoDBManagerTask().execute(DynamoDBManagerType.CLEAN_UP);
 			}
 		});
-*/
+
 		
 		//Predict Dengue Cases
 		final Button predictButton = (Button) findViewById(R.id.predict_bttn);
@@ -169,7 +173,7 @@ public class UserPreferenceDemoActivity extends Activity {
 			public void onClick(View v) {
 				Log.i(TAG, "PredictBttn clicked.");
 
-				Toast.makeText(getApplicationContext(), "The Model Predicts: "+10+" Dengue Cases today for District of: "+district, Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), "The Model Predicts: "+10+" Dengue Cases today for city: "+Maincity+" District: "+district, Toast.LENGTH_LONG).show();
 			}
 		});
 		final Button getWeatherData = (Button) findViewById(R.id.GetWeatherData);
@@ -399,7 +403,9 @@ public class UserPreferenceDemoActivity extends Activity {
 							temp = jsonMain.getDouble("temp") - 273.15;
 
 							pressure = jsonMain.getDouble("pressure");
+							pressure=pressure/10;//convert pressure to kPa
 							humidity = jsonMain.getDouble("humidity");
+							
 							/******* Fetch node values **********/
 							String main = jsonChildNode.optString("main").toString();
 							String weatherdata = "T:" + (temp) + " P:" + pressure + " H:" + humidity;
@@ -442,16 +448,18 @@ public class UserPreferenceDemoActivity extends Activity {
 
 							/******* Fetch node values **********/
 							String name = jsonChildNode.optString("adminName2").toString();
+							String city = jsonChildNode.optString("placeName").toString();
 							String longit = jsonChildNode.optString("lng").toString();
 							String latid = jsonChildNode.optString("lat").toString();
 
 							OutputData += " Name           : " + name + "  " + "longitude      : " + longit + "  "
 									+ "Time                : " + latid + " "
-									+ "-------------------------------------------------";
+									+ "-------------------------------------------------"+" City: "+city;
 							Log.i("District", name);
 							district = name;
+							Maincity=city;
 
-							Toast.makeText(getApplicationContext(), "District:" + name, Toast.LENGTH_LONG).show();
+							Toast.makeText(getApplicationContext(), "District:" + name+"\n"+"city: "+city, Toast.LENGTH_LONG).show();
 						}
 					}
 
@@ -509,14 +517,16 @@ public class UserPreferenceDemoActivity extends Activity {
 				// Double.toString(gps.getLongitude());
 				Log.e("Latitude", latitude + "");
 				Log.e("Longitude", longitude + "");
-
+				 SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	        	   String updateStaticDate = dateFormatter.format(new Date());
 				// txtStatus.setText((txtStatus.getText().equals(""))?"Null":txtStatus.getText().toString());
 				if (tableStatus.equalsIgnoreCase("ACTIVE")) {
 					Log.e("Inserting", "Inserting users...");
 					Log.e("Inserting", "Status message..." + statusMessage);
-					DynamoDBManager.insertUsers(statusMessage, latitude, longitude);
+					DynamoDBManager.insertUsers(statusMessage, latitude, longitude,updateStaticDate);
+					
 					DynamoDBManager.insertCurrentWeather(district, temp + "", humidity + "", "10", pressure + "", 10,
-							latitude + "", longitude + "");
+							latitude + "", longitude + "","Bilal",updateStaticDate,Maincity);
 				}
 			} else if (types[0] == DynamoDBManagerType.LIST_USERS) {
 				if (tableStatus.equalsIgnoreCase("ACTIVE")) {

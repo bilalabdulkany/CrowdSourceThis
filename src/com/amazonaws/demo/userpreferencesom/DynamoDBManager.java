@@ -62,7 +62,7 @@ public class DynamoDBManager {
      */
     public static void createTable() {
     	createTable(Constants.UserTableName, 10l, 10l, "userName", "S", "updateDate", "S");
-    	createTable(Constants.WeatherDataTableName, 10l, 10l, "district", "S", "updateDate", "S");
+    	createTable(Constants.WeatherDataTableName, 10l, 10l, "userName", "S", "updateDate", "S");
     }
 
     
@@ -178,12 +178,14 @@ public class DynamoDBManager {
     /*
      * Inserts ten users with userNo from 1 to 10 and random names.
      */
-    public static void insertUsers(String status,double latitude, double longitude) {
+    static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    static String updateStaticDate = dateFormatter.format(new Date());
+    public static void insertUsers(String status,double latitude, double longitude, String date) {
         AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
                 .ddb();
         DynamoDBMapper mapper = new DynamoDBMapper(ddb);
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        String updateDate = dateFormatter.format(new Date());
+       
+        
 
         
         try {
@@ -192,7 +194,7 @@ public class DynamoDBManager {
                 userPreference.setLatitude(latitude+"");
                 userPreference.setStatusMessage(status);
                 userPreference.setLongitude(longitude+"");
-                userPreference.setUpdateDate(updateDate);
+                userPreference.setUpdateDate(date);
                 Log.d(TAG, "Inserting users " + latitude+" "+longitude);
                 mapper.save(userPreference);
                 Log.d(TAG, "Users inserted");
@@ -210,19 +212,20 @@ public class DynamoDBManager {
    public static void insertCurrentWeather(String district,String meanTemp,
     String meanHumidity,
     String meanWind,
-    String precipitation,
+    String sealevelpressure,
     int dengueCases,
     String latitude,
-    String longitude) {
+    String longitude, String userName, String date,String city) {
        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
                .ddb();
        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
-       SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-       String updateDate = dateFormatter.format(new Date());
+       
+      // String updateStaticDate = dateFormatter.format(new Date());
 
        
        try {
                CurrentWeather currentWeather = new CurrentWeather();
+               currentWeather.setUserName("Bilal");
                currentWeather.setDistrict(district);
                currentWeather.setMeanHumidity(meanHumidity);
                currentWeather.setLatitude(latitude+"");
@@ -230,9 +233,10 @@ public class DynamoDBManager {
                currentWeather.setLongitude(longitude+"");
                currentWeather.setMeanTemp(meanTemp);
                currentWeather.setMeanWind(meanWind);
-               currentWeather.setPrecipitation(precipitation);
-               currentWeather.setUpdateDate(updateDate);
-               Log.d(TAG, "Inserting Weather " + latitude+" "+longitude+" "+meanHumidity+" "+meanTemp+ " "+precipitation);
+               currentWeather.setSealevelpressure(sealevelpressure);
+               currentWeather.setUpdateDate(date);
+               currentWeather.setCity(city);
+               Log.d(TAG, "Inserting Weather " + latitude+" "+longitude+" "+meanHumidity+" "+meanTemp+ " "+sealevelpressure+ " "+userName);
                mapper.save(currentWeather);
                Log.d(TAG, "Weather Data inserted!");
        } catch (AmazonServiceException ex) {
@@ -294,7 +298,12 @@ public class DynamoDBManager {
 
         return null;
     }
-    
+    /**
+     * Get the UserPreference Table data given the below parameters
+     * @param userName
+     * @param updateDate
+     * @return
+     */
     public static UserPreference getUserPreference(String userName,String updateDate) {
 
         AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
@@ -327,6 +336,46 @@ public class DynamoDBManager {
         return null;
     }
 
+    /**
+     * Get the CurrentWeather Table data for given date/time with the below parameters
+     * @param userName
+     * @param updateDate
+     * @return
+     */
+    public static CurrentWeather getCurrentWeatherInstance(String username, String updateDate) {
+
+        AmazonDynamoDBClient ddb = UserPreferenceDemoActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+
+        try {
+        	CurrentWeather userCurrentWeather = new CurrentWeather();
+        	userCurrentWeather.setUserName(username);
+        	String queryString=updateDate;
+        	
+        	Condition rangeKeyCondition = new Condition()
+        	        .withComparisonOperator(ComparisonOperator.BEGINS_WITH.toString())
+        	        .withAttributeValueList(new AttributeValue().withS(queryString.toString()));
+        	
+        	DynamoDBQueryExpression queryExpression = new DynamoDBQueryExpression()
+        	        .withHashKeyValues(userCurrentWeather)
+        	        .withRangeKeyCondition("updateDate", rangeKeyCondition)
+        	        .withConsistentRead(false);
+             
+        	PaginatedQueryList<CurrentWeather> result = mapper.query(CurrentWeather.class, queryExpression);
+        	Log.e("RESULT","Gettig the results.." );
+            return result.get(0);
+
+        } catch (AmazonServiceException ex) {
+        	Log.e("ERROR", "Error in inserting current weather");
+            UserPreferenceDemoActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
+
+        return null;
+    }
+
+    
     /*
      * Updates one attribute/value pair for the specified user.
      */
@@ -446,18 +495,39 @@ public class DynamoDBManager {
         private String meanTemp;
         private String meanHumidity;
         private String meanWind;
-        private String precipitation;
+        private String sealevelpressure;
         private int dengueCases;
         private String latitude;
         private String longitude;
         private String updateDate;
         private String district;
-        @DynamoDBRangeKey(attributeName = "updateDate")
+        private String city;
+        private String userName;
+        
+        @DynamoDBAttribute(attributeName = "city")
+        public String getCity() {
+			return city;
+		}
+
+		public void setCity(String city) {
+			this.city = city;
+		}
+
+		@DynamoDBHashKey(attributeName = "userName")
+        public String getUserName() {
+			return userName;
+		}
+
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
+
+		@DynamoDBRangeKey(attributeName = "updateDate")
         public String getUpdateDate() {
 			return updateDate;
 		}
         
-        @DynamoDBHashKey(attributeName = "district")
+		@DynamoDBAttribute(attributeName = "district")
         public String getDistrict() {
             return district;
         }
@@ -474,13 +544,13 @@ public class DynamoDBManager {
 			this.meanWind = meanWind;
 		}
 
-		@DynamoDBAttribute(attributeName = "precipitation")
-		public String getPrecipitation() {
-			return precipitation;
+		@DynamoDBAttribute(attributeName = "sealevelpressure")
+		public String getSealevelpressure() {
+			return sealevelpressure;
 		}
 
-		public void setPrecipitation(String precipitation) {
-			this.precipitation = precipitation;
+		public void setSealevelpressure(String sealevelpressure) {
+			this.sealevelpressure = sealevelpressure;
 		}
 
 		@DynamoDBAttribute(attributeName = "dengueCases")
