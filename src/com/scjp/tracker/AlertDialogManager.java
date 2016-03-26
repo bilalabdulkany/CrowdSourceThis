@@ -1,6 +1,6 @@
 package com.scjp.tracker;
 
-import com.amazonaws.demo.userpreferencesom.R;
+import com.scjp.main.denguemodel.R;
 
 import android.app.AlertDialog;
 import android.content.Context;

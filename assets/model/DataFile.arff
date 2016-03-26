@@ -1,0 +1,8 @@
+@relation 'Colombo Weather Prediction'
+@attribute Mean_TemperatureC {1,2,3,4}
+@attribute Mean_Humidity {1,2,3,4}
+@attribute Mean_Wind_SpeedKmph {1,2,3,4}
+@attribute Dengue_cases {1,2,3,4}
+@attribute Mean_SeaLevel_PressurekPa {1,2,3,4}
+
+@data

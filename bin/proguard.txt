@@ -1,9 +1,9 @@
+# view AndroidManifest.xml #generated:19
+-keep class com.scjp.main.denguemodel.MainDenguePredictorActivity { <init>(...); }
+
 # view AndroidManifest.xml #generated:26
--keep class com.amazonaws.demo.userpreferencesom.UserActivity { <init>(...); }
+-keep class com.scjp.main.denguemodel.UserActivity { <init>(...); }
 
 # view AndroidManifest.xml #generated:28
--keep class com.amazonaws.demo.userpreferencesom.UserListActivity { <init>(...); }
-
-# view AndroidManifest.xml #generated:19
--keep class com.amazonaws.demo.userpreferencesom.UserPreferenceDemoActivity { <init>(...); }
+-keep class com.scjp.main.denguemodel.UserListActivity { <init>(...); }
 

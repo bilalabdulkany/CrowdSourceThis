@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="libs/aws-android-sdk-ddb-mapper-2.2.5.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="libs/weka.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
